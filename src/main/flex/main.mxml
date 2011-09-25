@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<s:VGroup>
+		<s:TextArea id="textArea" width="300" height="300"/>
+		<s:Button label="Connect" click="onConnectClick()"/>
+		<s:Button label="Send" click="onSendClick()"/>
+		<s:Button label="Disconnect" click="onDisconnectClick()"/>
+	</s:VGroup>
+	<fx:Script>
+		<![CDATA[
+			import io.socket.flash.ISocketIOTransport;
+			import io.socket.flash.SocketIOEvent;
+			import io.socket.flash.XhrPollingTransport;
+			
+			import mx.controls.Alert;
+			
+			private var _ioSocket:ISocketIOTransport;
+			
+			private function onConnectClick():void
+			{
+				_ioSocket = new XhrPollingTransport("http://localhost:7878/socket.io");
+				_ioSocket.addEventListener(SocketIOEvent.CONNECT, onSocketConnected);
+				_ioSocket.addEventListener(SocketIOEvent.DISCONNECT, onSocketDisconnected);
+				_ioSocket.addEventListener(SocketIOEvent.MESSAGE, onSocketMessage);
+				_ioSocket.connect();
+			}
+			
+			private function onDisconnectClick():void
+			{
+				_ioSocket.disconnect();
+			}
+			
+			private function onSocketMessage(event:SocketIOEvent):void
+			{
+				logMessage(String(event.message));
+			}
+			
+			private function onSendClick():void
+			{
+				_ioSocket.send({type: "chatMessage", data: "Hello world!!!"});
+				_ioSocket.send({type: "chatMessage", data: "Delirium tremens"});
+				_ioSocket.send("HELLO!!!");
+			}
+			
+			private function onSocketConnected(event:SocketIOEvent):void
+			{
+				logMessage("Connected" + event.target);
+			}
+			
+			private function onSocketDisconnected(event:SocketIOEvent):void
+			{
+				logMessage("Disconnected" + event.target);
+			}
+			
+			private function logMessage(message:String):void
+			{
+				textArea.text = textArea.text + message + "\n";
+			}
+		]]>
+	</fx:Script>
+</s:Application>
