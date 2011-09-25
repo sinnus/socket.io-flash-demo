@@ -16,6 +16,7 @@
 			import com.adobe.serialization.json.JSON;
 			
 			import io.socket.flash.ISocketIOTransport;
+			import io.socket.flash.SocketIOErrorEvent;
 			import io.socket.flash.SocketIOEvent;
 			import io.socket.flash.XhrPollingTransport;
 			
@@ -29,7 +30,19 @@
 				_ioSocket.addEventListener(SocketIOEvent.CONNECT, onSocketConnected);
 				_ioSocket.addEventListener(SocketIOEvent.DISCONNECT, onSocketDisconnected);
 				_ioSocket.addEventListener(SocketIOEvent.MESSAGE, onSocketMessage);
+				_ioSocket.addEventListener(SocketIOErrorEvent.CONNECTION_FAULT, onSocketConnectionFault);
+				_ioSocket.addEventListener(SocketIOErrorEvent.SECURITY_FAULT, onSocketSecurityFault);
 				_ioSocket.connect();
+			}
+			
+			private function onSocketConnectionFault(event:SocketIOErrorEvent):void
+			{
+				logMessage(event.type + ":" + event.text);
+			}
+			
+			private function onSocketSecurityFault(event:SocketIOErrorEvent):void
+			{
+				logMessage(event.type + ":" + event.text);
 			}
 			
 			private function onDisconnectClick():void
