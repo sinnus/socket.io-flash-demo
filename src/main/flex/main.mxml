@@ -13,6 +13,8 @@
 	</s:VGroup>
 	<fx:Script>
 		<![CDATA[
+			import com.adobe.serialization.json.JSON;
+			
 			import io.socket.flash.ISocketIOTransport;
 			import io.socket.flash.SocketIOEvent;
 			import io.socket.flash.XhrPollingTransport;
@@ -23,7 +25,7 @@
 			
 			private function onConnectClick():void
 			{
-				_ioSocket = new XhrPollingTransport("http://localhost:7878/socket.io");
+				_ioSocket = new XhrPollingTransport("http://localhost:7878/socket.io", this);
 				_ioSocket.addEventListener(SocketIOEvent.CONNECT, onSocketConnected);
 				_ioSocket.addEventListener(SocketIOEvent.DISCONNECT, onSocketDisconnected);
 				_ioSocket.addEventListener(SocketIOEvent.MESSAGE, onSocketMessage);
@@ -37,7 +39,14 @@
 			
 			private function onSocketMessage(event:SocketIOEvent):void
 			{
-				logMessage(String(event.message));
+				if (event.message is String)
+				{
+					logMessage(String(event.message));
+				}
+				else
+				{
+					logMessage(JSON.encode(event.message));
+				}
 			}
 			
 			private function onSendClick():void
