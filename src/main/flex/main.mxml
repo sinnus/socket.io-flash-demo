@@ -20,9 +20,6 @@
 			import io.socket.flash.SocketIOErrorEvent;
 			import io.socket.flash.SocketIOEvent;
 			import io.socket.flash.SocketIOTransportFactory;
-			import io.socket.flash.XhrPollingTransport;
-			
-			import mx.controls.Alert;
 			
 			private var _socketIOTransportFactory:ISocketIOTransportFactory = new SocketIOTransportFactory();
 			private var _ioSocket:ISocketIOTransport;
