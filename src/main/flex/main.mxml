@@ -16,20 +16,36 @@
 			import com.adobe.serialization.json.JSON;
 			
 			import io.socket.flash.ISocketIOTransport;
+			import io.socket.flash.ISocketIOTransportFactory;
+			import io.socket.flash.SocketIOErrorEvent;
 			import io.socket.flash.SocketIOEvent;
+			import io.socket.flash.SocketIOTransportFactory;
 			import io.socket.flash.XhrPollingTransport;
 			
 			import mx.controls.Alert;
 			
+			private var _socketIOTransportFactory:ISocketIOTransportFactory = new SocketIOTransportFactory();
 			private var _ioSocket:ISocketIOTransport;
 			
 			private function onConnectClick():void
 			{
-				_ioSocket = new XhrPollingTransport("http://localhost:7878/socket.io", this);
+				_ioSocket = _socketIOTransportFactory.createSocketIOTransport("xhr-polling", "http://localhost:7878/socket.io", this);
 				_ioSocket.addEventListener(SocketIOEvent.CONNECT, onSocketConnected);
 				_ioSocket.addEventListener(SocketIOEvent.DISCONNECT, onSocketDisconnected);
 				_ioSocket.addEventListener(SocketIOEvent.MESSAGE, onSocketMessage);
+				_ioSocket.addEventListener(SocketIOErrorEvent.CONNECTION_FAULT, onSocketConnectionFault);
+				_ioSocket.addEventListener(SocketIOErrorEvent.SECURITY_FAULT, onSocketSecurityFault);
 				_ioSocket.connect();
+			}
+			
+			private function onSocketConnectionFault(event:SocketIOErrorEvent):void
+			{
+				logMessage(event.type + ":" + event.text);
+			}
+			
+			private function onSocketSecurityFault(event:SocketIOErrorEvent):void
+			{
+				logMessage(event.type + ":" + event.text);
 			}
 			
 			private function onDisconnectClick():void
@@ -51,7 +67,7 @@
 			
 			private function onSendClick():void
 			{
-				_ioSocket.send({type: "chatMessage", data: "Hello world!!!"});
+				_ioSocket.send({type: "chatMessage", data: "Привет!!!"});
 				_ioSocket.send({type: "chatMessage", data: "Delirium tremens"});
 				_ioSocket.send("HELLO!!!");
 			}
