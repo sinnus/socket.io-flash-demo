@@ -20,13 +20,15 @@
 			import io.socket.flash.SocketIOErrorEvent;
 			import io.socket.flash.SocketIOEvent;
 			import io.socket.flash.SocketIOTransportFactory;
+			import io.socket.flash.WebsocketTransport;
+			import io.socket.flash.XhrPollingTransport;
 			
 			private var _socketIOTransportFactory:ISocketIOTransportFactory = new SocketIOTransportFactory();
 			private var _ioSocket:ISocketIOTransport;
 			
 			private function onConnectClick():void
 			{
-				_ioSocket = _socketIOTransportFactory.createSocketIOTransport("xhr-polling", "http://localhost:7878/socket.io", this);
+				_ioSocket = _socketIOTransportFactory.createSocketIOTransport(XhrPollingTransport.TRANSPORT_TYPE, "localhost:7878/socket.io", this);
 				_ioSocket.addEventListener(SocketIOEvent.CONNECT, onSocketConnected);
 				_ioSocket.addEventListener(SocketIOEvent.DISCONNECT, onSocketDisconnected);
 				_ioSocket.addEventListener(SocketIOEvent.MESSAGE, onSocketMessage);
