@@ -9,6 +9,7 @@
 		<s:TextArea id="textArea" width="300" height="300"/>
 		<s:Button label="Connect" click="onConnectClick()"/>
 		<s:Button label="Send" click="onSendClick()"/>
+		<s:Button label="SendMessage" click="onSendMessageClick()"/>
 		<s:Button label="Disconnect" click="onDisconnectClick()"/>
 	</s:VGroup>
 	<fx:Script>
@@ -28,7 +29,7 @@
 			
 			private function onConnectClick():void
 			{
-				_ioSocket = _socketIOTransportFactory.createSocketIOTransport(XhrPollingTransport.TRANSPORT_TYPE, "localhost:7878/socket.io", this);
+				_ioSocket = _socketIOTransportFactory.createSocketIOTransport(XhrPollingTransport.TRANSPORT_TYPE, "localhost:8080/socket.io", this);
 				_ioSocket.addEventListener(SocketIOEvent.CONNECT, onSocketConnected);
 				_ioSocket.addEventListener(SocketIOEvent.DISCONNECT, onSocketDisconnected);
 				_ioSocket.addEventListener(SocketIOEvent.MESSAGE, onSocketMessage);
@@ -64,16 +65,22 @@
 				}
 			}
 			
+			private function onSendMessageClick():void
+			{
+				_ioSocket.send("Привет!");
+			}
+			
 			private function onSendClick():void
 			{
-				_ioSocket.send({type: "chatMessage", data: "Привет!!!"});
-				_ioSocket.send({type: "chatMessage", data: "Delirium tremens"});
-				_ioSocket.send("HELLO!!!");
+				var chatObject:Object = new Object();
+				chatObject["@class"] = "ChatObject"
+				_ioSocket.send(chatObject);
 			}
 			
 			private function onSocketConnected(event:SocketIOEvent):void
 			{
 				logMessage("Connected" + event.target);
+				//onSendClick();
 			}
 			
 			private function onSocketDisconnected(event:SocketIOEvent):void
